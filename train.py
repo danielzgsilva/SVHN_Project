@@ -30,7 +30,7 @@ class Trainer():
         self.lr = self.opt.learning_rate
         
         # load data from pickle file
-        data, test_data = load_pickle(os.join.path(self.data_path, 'SVHN_metadata.pickle')
+        data, test_data = load_pickle(os.join.path(self.data_path, 'SVHN_metadata.pickle'))
         shuffle(data)
         shuffle(test_data)
                                       

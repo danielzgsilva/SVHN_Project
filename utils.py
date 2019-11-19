@@ -6,9 +6,9 @@ from model import SVHN_CNN
 
 def load_pickle(filename):
     with open(filename, 'rb') as file:
-    temp = pickle.load(file )
-    train_dataset = temp['train_dataset']
-    test_dataset = temp['test_dataset']
+        temp = pickle.load(file )
+        train_dataset = temp['train_dataset']
+        test_dataset = temp['test_dataset']
     del temp
     
     return train_dataset, test_dataset
