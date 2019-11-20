@@ -173,8 +173,6 @@ class Trainer:
             running_loss += loss.item() * images.size(0)
             running_seq_corrects += seq_correct
             running_digit_corrects += digit_correct
-            print(digit_correct)
-            print(gt_lengths.sum().item())
             running_total_digits += gt_lengths.sum().item()
 
         self.scheduler.step()
@@ -182,7 +180,7 @@ class Trainer:
         # Calculate epoch statistics
         epoch_loss = running_loss / self.datasets[phase].__len__()
         seq_acc = running_seq_corrects / self.datasets[phase].__len__()
-        digit_acc = running_digit_corrects / running_total_digits
+        digit_acc = running_digit_corrects / self.datasets[phase].__len__() * 5
 
         return epoch_loss, seq_acc, digit_acc
 
