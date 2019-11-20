@@ -174,7 +174,7 @@ class Trainer:
 
         return epoch_loss, epoch_acc
     
-    def train(self):
+    def train_(self):
         start = time.time()
 
         best_model_wts = self.model.state_dict()
