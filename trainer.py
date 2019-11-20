@@ -59,15 +59,15 @@ class Trainer:
 
         # Data transformations to be used during loading of images
         self.data_transforms = {
-            'Train': transforms.Compose([transforms.RandomRotation(0.2),
-                                         transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
+            'Train': transforms.Compose([#transforms.RandomRotation(0.2),
+                                        # transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
                                          transforms.Resize(self.input_size),
                                          transforms.ToTensor(),
                                          transforms.Normalize(mean=[0.5, 0.5, 0.5],
                                                               std=[0.5, 0.5, 0.5])
                                          ]),
-            'Validation': transforms.Compose([transforms.RandomRotation(0.2),
-                                              transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
+            'Validation': transforms.Compose([#transforms.RandomRotation(0.2),
+                                              #transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
                                               transforms.Resize(self.input_size),
                                               transforms.ToTensor(),
                                               transforms.Normalize(mean=[0.5, 0.5, 0.5],
