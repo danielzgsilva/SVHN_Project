@@ -189,7 +189,7 @@ class Trainer:
         best_model_wts = self.model.state_dict()
         best_acc = 0.0
 
-        print('| Epoch\t | Train Loss\t| Train Acc\t| Valid Loss\t| Valid Acc\t| Epoch Time |')
+        print('| Epoch\t | Train Loss\t| Train Seq Acc\t| Train Dig Acc\t| Valid Loss\t| Valid Seq Acc\t| Valid Dig Acc\t| Epoch Time |')
         print('-' * 110)
 
         # Iterate through epochs
