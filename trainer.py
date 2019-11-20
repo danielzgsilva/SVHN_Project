@@ -115,6 +115,7 @@ class Trainer:
         _, digit5_preds = torch.max(digit5, 1)
 
         num_seq_correct = 0
+        num_digits_correct = 0
 
         num_seq_correct += (digit1_preds.eq(gt_labels[:, 0]) &
                             digit2_preds.eq(gt_labels[:, 1]) &
@@ -122,11 +123,11 @@ class Trainer:
                             digit4_preds.eq(gt_labels[:, 3]) &
                             digit5_preds.eq(gt_labels[:, 4])).cpu().sum()
 
-        num_digits_correct = digit1_preds.eq(gt_labels[:, 0]).cpu().sum() + \
-                             digit2_preds.eq(gt_labels[:, 1]).cpu().sum() + \
-                             digit3_preds.eq(gt_labels[:, 2]).cpu().sum() + \
-                             digit4_preds.eq(gt_labels[:, 3]).cpu().sum() + \
-                             digit5_preds.eq(gt_labels[:, 4]).cpu().sum()
+        num_digits_correct += (digit1_preds.eq(gt_labels[:, 0]) +
+                               digit2_preds.eq(gt_labels[:, 1]) +
+                               digit3_preds.eq(gt_labels[:, 2]) +
+                               digit4_preds.eq(gt_labels[:, 3]) +
+                               digit5_preds.eq(gt_labels[:, 4])).cpu().sum()
 
         return num_seq_correct.item(), num_digits_correct.item()
 
@@ -173,7 +174,6 @@ class Trainer:
             running_loss += loss.item() * images.size(0)
             running_seq_corrects += seq_correct
             running_digit_corrects += digit_correct
-            running_total_digits += gt_lengths.sum().item()
 
         self.scheduler.step()
 
@@ -191,7 +191,7 @@ class Trainer:
         best_acc = 0.0
 
         print('| Epoch\t | Train Loss\t| Train Seq Acc\t| Train Dig Acc\t| Valid Loss\t| Valid Seq Acc\t| Valid Dig Acc\t| Epoch Time |')
-        print('-' * 120)
+        print('-' * 118)
 
         # Iterate through epochs
         for epoch in range(self.epochs):
@@ -207,7 +207,7 @@ class Trainer:
             epoch_time = time.time() - epoch_start
 
             # Print statistics after the validation phase
-            print("| {}\t | {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.4f}\t|{:.4f}\t| {:.4f}\t| {:.0f}m {:.0f}s     |"
+            print("| {}\t | {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.0f}m {:.0f}s     |"
                   .format(epoch + 1, train_loss, train_seq_acc, train_dig_acc, val_loss, val_seq_acc, val_dig_acc, epoch_time // 60, epoch_time % 60))
 
             # Copy and save the model's weights if it has the best accuracy thus far
@@ -217,7 +217,7 @@ class Trainer:
 
         total_time = time.time() - start
 
-        print('-' * 120)
+        print('-' * 118)
         print('Training complete in {:.0f}m {:.0f}s'.format(total_time // 60, total_time % 60))
         print('Best validation accuracy: {:.4f}'.format(best_acc))
 
