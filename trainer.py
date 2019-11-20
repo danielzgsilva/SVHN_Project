@@ -180,7 +180,7 @@ class Trainer:
         # Calculate epoch statistics
         epoch_loss = running_loss / self.datasets[phase].__len__()
         seq_acc = running_seq_corrects / self.datasets[phase].__len__()
-        digit_acc = running_digit_corrects / self.datasets[phase].__len__() * 5
+        digit_acc = running_digit_corrects / (self.datasets[phase].__len__() * 5)
 
         return epoch_loss, seq_acc, digit_acc
 
