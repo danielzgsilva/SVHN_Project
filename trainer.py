@@ -59,15 +59,15 @@ class Trainer:
 
         # Data transformations to be used during loading of images
         self.data_transforms = {
-            'Train': transforms.Compose([#transforms.RandomRotation(0.2),
-                                         #transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
+            'Train': transforms.Compose([transforms.RandomRotation(0.2),
+                                         transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
                                          transforms.Resize(self.input_size),
                                          transforms.ToTensor(),
                                          transforms.Normalize(mean=[0.5, 0.5, 0.5],
                                                               std=[0.5, 0.5, 0.5])
                                          ]),
-            'Validation': transforms.Compose([#transforms.RandomRotation(0.2),
-                                              #transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
+            'Validation': transforms.Compose([transforms.RandomRotation(0.2),
+                                              transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
                                               transforms.Resize(self.input_size),
                                               transforms.ToTensor(),
                                               transforms.Normalize(mean=[0.5, 0.5, 0.5],
@@ -134,6 +134,7 @@ class Trainer:
         running_loss = 0.0
         running_seq_corrects = 0
         running_digit_corrects = 0
+        running_total_digits = 0
 
         if phase == 'Train':
             self.model.train()
@@ -173,12 +174,14 @@ class Trainer:
             running_loss += loss.item() * images.size(0)
             running_seq_corrects += seq_correct
             running_digit_corrects += digit_correct
+            running_total_digits += gt_lengths.sum().item()
 
         # Calculate epoch statistics
         epoch_loss = running_loss / self.datasets[phase].__len__()
-        epoch_acc = running_seq_corrects / self.datasets[phase].__len__()
+        seq_acc = running_seq_corrects / self.datasets[phase].__len__()
+        digit_acc = running_digit_corrects / running_total_digits
 
-        return epoch_loss, epoch_acc
+        return epoch_loss, seq_acc, digit_acc
 
     def train(self):
         start = time.time()
@@ -187,7 +190,7 @@ class Trainer:
         best_acc = 0.0
 
         print('| Epoch\t | Train Loss\t| Train Acc\t| Valid Loss\t| Valid Acc\t| Epoch Time |')
-        print('-' * 86)
+        print('-' * 110)
 
         # Iterate through epochs
         for epoch in range(self.epochs):
@@ -195,25 +198,25 @@ class Trainer:
             epoch_start = time.time()
 
             # Training phase
-            train_loss, train_acc = self.run_epoch('Train')
+            train_loss, train_seq_acc, train_dig_acc = self.run_epoch('Train')
 
             # Validation phase
-            val_loss, val_acc = self.run_epoch('Validation')
+            val_loss, val_seq_acc, val_dig_acc = self.run_epoch('Validation')
 
             epoch_time = time.time() - epoch_start
 
             # Print statistics after the validation phase
-            print("| {}\t | {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.0f}m {:.0f}s     |"
-                  .format(epoch + 1, train_loss, train_acc, val_loss, val_acc, epoch_time // 60, epoch_time % 60))
+            print("| {}\t | {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.4f}\t||{:.4f}\t| {:.4f}\t| {:.0f}m {:.0f}s     |"
+                  .format(epoch + 1, train_loss, train_seq_acc, train_dig_acc, val_loss, val_seq_acc, val_dig_acc, epoch_time // 60, epoch_time % 60))
 
             # Copy and save the model's weights if it has the best accuracy thus far
-            if val_acc > best_acc:
-                best_acc = val_acc
+            if val_seq_acc > best_acc:
+                best_acc = val_seq_acc
                 best_model_wts = self.model.state_dict()
 
         total_time = time.time() - start
 
-        print('-' * 74)
+        print('-' * 110)
         print('Training complete in {:.0f}m {:.0f}s'.format(total_time // 60, total_time % 60))
         print('Best validation accuracy: {:.4f}'.format(best_acc))
 
