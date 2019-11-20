@@ -2,7 +2,7 @@ import torch
 import pickle
 import os
 
-from model import SVHN_CNN
+from model import SVHNModel
 
 def load_pickle(filename):
     with open(filename, 'rb') as file:
@@ -17,7 +17,7 @@ def save_model(path, name, model, epochs, optimizer, criterion):
     model_path = os.path.join(path, name) + '.tar'
     
     torch.save({
-        'model' : SVHN_CNN(),
+        'model' : SVHNModel(),
         'epoch' : epochs,
         'model_state_dict': model.state_dict(),
         'optimizer' : optimizer,
