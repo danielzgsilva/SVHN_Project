@@ -37,7 +37,7 @@ class Trainer:
         print('Training options:\n'
               '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t'
               'Learning rate: {}\n\tLoss: {}\n\tOptimizer: {}\n'. \
-              format(self.input_size, self.batch_size, self.epochs, self.lr, self.criterion, self.optimizer))
+              format(self.input_size, self.batch_size, self.epochs, self.lr, self.criterion, 'Adam()'))
 
         # load data from pickle file
         train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))

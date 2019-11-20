@@ -3,7 +3,6 @@ import argparse
 
 file_dir = os.path.dirname(__file__)
 
-
 class SVHN_Options:
     def __init__(self):
         self.parser = argparse.ArgumentParser(description="SVHN options")
