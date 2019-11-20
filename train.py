@@ -15,7 +15,7 @@ from utils import *
 options = SVHN_Options()
 opts = options.parse()
 
-class Trainer():
+class Trainer:
     def __init__(self, options):
         self.opt = options
         self.data_path = self.opt.data_path
@@ -28,6 +28,10 @@ class Trainer():
         self.num_workers = self.opt.num_workers
         self.epochs = self.opt.num_epochs
         self.lr = self.opt.learning_rate
+
+        print('Training options:\n'
+              '\tinput_size: {} \tbatch_size: {} \tepochs: {} \t lr: {}'.\
+              format(self.input_size, self.batch_size, self.epochs, self.lr))
         
         # load data from pickle file
         data, test_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
@@ -39,7 +43,7 @@ class Trainer():
         train_data = data[:split]
         validation_data = data[split:]
         
-        print('Train files: {} Validation files: {} Test files: {}'\
+        print('Training on: {} Train files, {} Validation files, and {} Test files\n'\
               .format(len(train_data), len(validation_data), len(test_data)))
                                                                       
         self.data_transforms = {
@@ -94,7 +98,6 @@ class Trainer():
         _, digit5_preds = torch.max(digit5, 1)
 
         num_seq_correct = 0
-        num_digits_correct = 0
 
         num_seq_correct += (digit1_preds.eq(gt_labels[:, 0]) &
                             digit2_preds.eq(gt_labels[:, 1]) &
@@ -110,7 +113,7 @@ class Trainer():
 
         return num_seq_correct.item(), num_digits_correct.item()
               
-    def run_epoch(self, model, criterion, optimizer, dataloaders, device, phase):
+    def run_epoch(self, model, criterion, optimizer, phase):
         running_loss = 0.0
         running_seq_corrects = 0
         running_digit_corrects = 0
@@ -121,12 +124,12 @@ class Trainer():
             model.eval()
 
         # Looping through batches
-        for i, (images, gt_lengths, gt_labels) in enumerate(dataloaders[phase]):
+        for i, (images, gt_lengths, gt_labels) in enumerate(self.dataloaders[phase]):
 
             # Ensure we're doing this calculation on our GPU if possible
-            images = images.to(device)
-            gt_lengths = gt_lengths.to(device)
-            gt_labels = gt_labels.to(device)
+            images = images.to(self.device)
+            gt_lengths = gt_lengths.to(self.device)
+            gt_labels = gt_labels.to(self.device)
 
             # Zero parameter gradients
             optimizer.zero_grad()
@@ -161,7 +164,7 @@ class Trainer():
 
         return epoch_loss, epoch_acc
     
-    def train(self, model, criterion, optimizer, num_epochs, dataloaders, device):
+    def train(self, model, criterion, optimizer):
         start = time.time()
 
         best_model_wts = model.state_dict()
@@ -171,15 +174,15 @@ class Trainer():
         print('-' * 86)
 
         # Iterate through epochs
-        for epoch in range(num_epochs):
+        for epoch in range(self.epochs):
 
             epoch_start = time.time()
 
             # Training phase
-            train_loss, train_acc = self.run_epoch(model, criterion, optimizer, dataloaders, device, 'Train')
+            train_loss, train_acc = self.run_epoch(model, criterion, optimizer, 'Train')
 
             # Validation phase
-            val_loss, val_acc = self.run_epoch(model, criterion, optimizer, dataloaders, device, 'Validation')
+            val_loss, val_acc = self.run_epoch(model, criterion, optimizer, 'Validation')
 
             epoch_time = time.time() - epoch_start
 
@@ -209,7 +212,7 @@ class Trainer():
         optimizer = optim.Adam(model.parameters(), lr = self.lr)
         model.to(self.device)
                                       
-        model = self.train(model, criterion, optimizer, self.epochs, self.dataloaders, self.device)
+        model = self.train(model, criterion, optimizer)
                                       
         save_model(self.model_path, self.model_name, model, self.epochs, optimizer, criterion)
                                       
