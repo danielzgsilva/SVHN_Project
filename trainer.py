@@ -44,14 +44,23 @@ class Trainer:
               format(self.input_size, self.batch_size, self.epochs, self.lr, self.step, self.criterion, self.optimizer))
 
         # load data from pickle file
-        train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
+        '''train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
         shuffle(train_data)
         shuffle(temp_data)
 
         # Splitting the data to create a validation set
         split = round(0.5 * len(temp_data))
         validation_data = temp_data[split:]
-        test_data = temp_data[:split]
+        test_data = temp_data[:split]'''
+
+        data, test_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
+        shuffle(data)
+        shuffle(test_data)
+
+        # Splitting the data to create a validation set
+        split = round(0.5 * len(data))
+        train_data = data[split:]
+        validation_data = data[:split]
 
         print('Training on:\n'
               '\tTrain files: {}\n\tValidation files: {}\n\tTest files: {}\n' \
@@ -79,7 +88,7 @@ class Trainer:
         self.datasets['Train'] = SVHNDataset(train_data, os.path.join(self.data_path, 'train'), \
                                              self.data_transforms['Train'])
 
-        self.datasets['Validation'] = SVHNDataset(validation_data, os.path.join(self.data_path, 'test'), \
+        self.datasets['Validation'] = SVHNDataset(validation_data, os.path.join(self.data_path, 'train'), \
                                                   self.data_transforms['Validation'])
 
         self.datasets['Test'] = SVHNDataset(test_data, os.path.join(self.data_path, 'test'), \
