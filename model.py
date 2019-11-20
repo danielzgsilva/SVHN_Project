@@ -26,7 +26,7 @@ class SVHNModel(nn.Module):
             nn.BatchNorm2d(128),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            nn.Dropout(0.2)
+            nn.Dropout(0.3)
         )
 
         self.block4 = nn.Sequential(
@@ -34,14 +34,14 @@ class SVHNModel(nn.Module):
             nn.BatchNorm2d(160),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            nn.Dropout(0.2)
+            nn.Dropout(0.4)
         )
         self.block5 = nn.Sequential(
             nn.Conv2d(in_channels=160, out_channels=192, kernel_size=(3, 3), stride=1, padding=1),
             nn.BatchNorm2d(192),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            nn.Dropout(0.2)
+            nn.Dropout(0.5)
         )
 
         self.block6 = nn.Sequential(
