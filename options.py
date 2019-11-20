@@ -42,7 +42,7 @@ class SVHN_Options:
         self.parser.add_argument("--scheduler_step_size",
                                  type=int,
                                  help="step size of the scheduler",
-                                 default=10)
+                                 default=5)
         self.parser.add_argument("--num_workers",
                                  type=int,
                                  help="number of dataloader workers",

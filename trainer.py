@@ -36,7 +36,7 @@ class Trainer:
         self.criterion = nn.CrossEntropyLoss()
         #self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
         self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=0.0005)
-        #self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.5)
+        self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.5)
 
         print('Training options:\n'
               '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t'
@@ -165,7 +165,6 @@ class Trainer:
                 if phase == 'Train':
                     loss.backward()
                     self.optimizer.step()
-                    #self.scheduler.step()
 
             # Calculate sequence-wise and digit-wise accuracy for the batch
             seq_correct, digit_correct = self.calc_acc(digit1, digit2, digit3, digit4, digit5, gt_labels)
@@ -174,7 +173,11 @@ class Trainer:
             running_loss += loss.item() * images.size(0)
             running_seq_corrects += seq_correct
             running_digit_corrects += digit_correct
+            print(digit_correct)
+            print(gt_lengths.sum().item())
             running_total_digits += gt_lengths.sum().item()
+
+        self.scheduler.step()
 
         # Calculate epoch statistics
         epoch_loss = running_loss / self.datasets[phase].__len__()
@@ -190,7 +193,7 @@ class Trainer:
         best_acc = 0.0
 
         print('| Epoch\t | Train Loss\t| Train Seq Acc\t| Train Dig Acc\t| Valid Loss\t| Valid Seq Acc\t| Valid Dig Acc\t| Epoch Time |')
-        print('-' * 110)
+        print('-' * 120)
 
         # Iterate through epochs
         for epoch in range(self.epochs):
@@ -206,7 +209,7 @@ class Trainer:
             epoch_time = time.time() - epoch_start
 
             # Print statistics after the validation phase
-            print("| {}\t | {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.4f}\t||{:.4f}\t| {:.4f}\t| {:.0f}m {:.0f}s     |"
+            print("| {}\t | {:.4f}\t| {:.4f}\t| {:.4f}\t| {:.4f}\t|{:.4f}\t| {:.4f}\t| {:.0f}m {:.0f}s     |"
                   .format(epoch + 1, train_loss, train_seq_acc, train_dig_acc, val_loss, val_seq_acc, val_dig_acc, epoch_time // 60, epoch_time % 60))
 
             # Copy and save the model's weights if it has the best accuracy thus far
@@ -216,7 +219,7 @@ class Trainer:
 
         total_time = time.time() - start
 
-        print('-' * 110)
+        print('-' * 120)
         print('Training complete in {:.0f}m {:.0f}s'.format(total_time // 60, total_time % 60))
         print('Best validation accuracy: {:.4f}'.format(best_acc))
 
