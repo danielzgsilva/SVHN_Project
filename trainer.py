@@ -58,7 +58,7 @@ class Trainer:
         shuffle(test_data)
 
         # Splitting the data to create a validation set
-        split = round(0.5 * len(data))
+        split = round(0.8 * len(data))
         train_data = data[split:]
         validation_data = data[:split]
 
