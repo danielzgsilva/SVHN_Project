@@ -151,8 +151,8 @@ class Trainer:
                 length, digit1, digit2, digit3, digit4, digit5 = self.model(images)
 
                 # Calculate the loss of the batch
-                loss = self.calc_loss(self.criterion, length,\
-                                 digit1, digit2, digit3, digit4, digit5, gt_lengths, gt_labels)
+                loss = self.calc_loss(length,digit1, digit2, digit3,\
+                                      digit4, digit5, gt_lengths, gt_labels)
 
                 # Adjust weights through backprop if we're in training phase
                 if phase == 'Train':
