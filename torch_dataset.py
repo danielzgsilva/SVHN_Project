@@ -1,4 +1,7 @@
+import torch
 from torch.utils.data import Dataset
+import PIL.Image as pil
+import os
 
 class SVHN_Dataset(Dataset):
     'Abstract PyTorch dataset class for the Street View House Numbers dataset'
