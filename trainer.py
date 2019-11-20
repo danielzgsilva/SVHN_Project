@@ -44,23 +44,14 @@ class Trainer:
               format(self.input_size, self.batch_size, self.epochs, self.lr, self.step, self.criterion, self.optimizer))
 
         # load data from pickle file
-        '''train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
+        train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
         shuffle(train_data)
         shuffle(temp_data)
 
         # Splitting the data to create a validation set
         split = round(0.5 * len(temp_data))
         validation_data = temp_data[split:]
-        test_data = temp_data[:split]'''
-
-        data, test_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
-        shuffle(data)
-        shuffle(test_data)
-
-        # Splitting the data to create a validation set
-        split = round(0.8 * len(data))
-        validation_data = data[split:]
-        train_data = data[:split]
+        test_data = temp_data[:split]
 
         print('Training on:\n'
               '\tTrain files: {}\n\tValidation files: {}\n\tTest files: {}\n' \
@@ -68,12 +59,16 @@ class Trainer:
 
         # Data transformations to be used during loading of images
         self.data_transforms = {
-            'Train': transforms.Compose([transforms.Resize(self.input_size),
+            'Train': transforms.Compose([transforms.RandomRotation(0.2),
+                                         transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
+                                         transforms.Resize(self.input_size),
                                          transforms.ToTensor(),
                                          transforms.Normalize(mean=[0.5, 0.5, 0.5],
                                                               std=[0.5, 0.5, 0.5])
                                          ]),
-            'Validation': transforms.Compose([transforms.Resize(self.input_size),
+            'Validation': transforms.Compose([transforms.RandomRotation(0.2),
+                                              transforms.transforms.ColorJitter(brightness=0.2, contrast=0.2),
+                                              transforms.Resize(self.input_size),
                                               transforms.ToTensor(),
                                               transforms.Normalize(mean=[0.5, 0.5, 0.5],
                                                                    std=[0.5, 0.5, 0.5])
