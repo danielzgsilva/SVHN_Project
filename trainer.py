@@ -22,11 +22,11 @@ class Trainer:
 
         # Training parameters
         self.input_size = (self.opt.height, self.opt.width)
-        self.batch_size = self.opt.batch_size
-        self.num_workers = self.opt.num_workers
-        self.epochs = self.opt.num_epochs
-        self.lr = self.opt.learning_rate
-        self.step = self.opt.scheduler_step_size
+        self.batch_size = int(self.opt.batch_size)
+        self.num_workers = int(self.opt.num_workers)
+        self.epochs = int(self.opt.num_epochs)
+        self.lr = float(self.opt.learning_rate)
+        self.step = int(self.opt.scheduler_step_size)
 
         # Create model and place on GPU
         self.model = SVHNModel()
