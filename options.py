@@ -35,14 +35,14 @@ class SVHN_Options:
         self.parser.add_argument("--learning_rate",
                                  type=float,
                                  help="learning rate",
-                                 default=0.0001)
+                                 default=0.001)
         self.parser.add_argument("--num_epochs",
                                  help="number of epochs",
                                  default=20)
         self.parser.add_argument("--scheduler_step_size",
                                  type=int,
                                  help="step size of the scheduler",
-                                 default=5)
+                                 default=10)
         self.parser.add_argument("--num_workers",
                                  type=int,
                                  help="number of dataloader workers",
