@@ -59,7 +59,7 @@ class Trainer():
                                          std=[0.5, 0.5, 0.5])])}
                                       
                                       
-        self.datasets = {}
+        self.datasets = dict()
         self.datasets['Train'] = SVHN_Dataset(train_data, os.path.join(self.data_path, 'train'),\
                                               self.data_transforms['Train'])
                                       
@@ -69,10 +69,10 @@ class Trainer():
         self.datasets['Test'] = SVHN_Dataset(test_data, os.path.join(self.data_path, 'test'),\
                                              self.data_transforms['Test'])
         
-        self.dataloaders = {i: DataLoader(datasets[i], batch_size=self.batch_size, shuffle=True,\
+        self.dataloaders = {i: DataLoader(self.datasets[i], batch_size=self.batch_size, shuffle=True,\
                                           num_workers = self.num_workers) for i in ['Train', 'Validation']}
 
-        self.test_loader = DataLoader(dataset = datasets['Test'], batch_size = 1, shuffle=True)
+        self.test_loader = DataLoader(dataset = self.datasets['Test'], batch_size = 1, shuffle=True)
 
     def calc_loss(self, criterion, length, digit1, digit2, digit3, digit4, digit5, gt_length, gt_labels):
         length_loss = criterion(length, gt_length)
@@ -110,7 +110,7 @@ class Trainer():
 
         return num_seq_correct.item(), num_digits_correct.item()
               
-    def run_epoch(self, epoch, model, criterion, dataloaders, device, phase):
+    def run_epoch(self, model, criterion, optimizer, dataloaders, device, phase):
         running_loss = 0.0
         running_seq_corrects = 0
         running_digit_corrects = 0
@@ -138,7 +138,7 @@ class Trainer():
                 length, digit1, digit2, digit3, digit4, digit5 = model(images)
 
                 # Calculate the loss of the batch
-                loss = calc_loss(criterion, length,\
+                loss = self.calc_loss(criterion, length,\
                                  digit1, digit2, digit3, digit4, digit5, gt_lengths, gt_labels)
 
                 # Adjust weights through backpropagation if we're in training phase
@@ -147,7 +147,7 @@ class Trainer():
                     optimizer.step()
 
             # Calculate sequence-wise and digit-wise accuracy for the batch
-            seq_correct, digit_correct = calc_acc(digit1, digit2, digit3,\
+            seq_correct, digit_correct = self.calc_acc(digit1, digit2, digit3,\
                                                   digit4, digit5, gt_labels)
 
             # Document statistics for the batch
@@ -176,10 +176,10 @@ class Trainer():
             epoch_start = time.time()
 
             # Training phase
-            train_loss, train_acc = self.run_epoch(epoch, model, criterion, dataloaders, device, 'Train')
+            train_loss, train_acc = self.run_epoch(model, criterion, optimizer, dataloaders, device, 'Train')
 
             # Validation phase
-            val_loss, val_acc = self.run_epoch(epoch, model, criterion, dataloaders, device, 'Validation')
+            val_loss, val_acc = self.run_epoch(model, criterion, optimizer, dataloaders, device, 'Validation')
 
             epoch_time = time.time() - epoch_start
 

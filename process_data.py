@@ -75,7 +75,7 @@ class PreProcessor():
         for i in range(num_files):
 
             # Get bounding box metadata for each image
-            metadata = unpack_box(i, struct)
+            metadata = self.unpack_box(i, struct)
 
             metadata['length'] = len(metadata['label'])
 
@@ -91,7 +91,7 @@ class PreProcessor():
             metadata['digits'] = digits
 
             # Get filename for each image
-            metadata['filename'] = unpack_filename(i, struct)
+            metadata['filename'] = self.unpack_filename(i, struct)
 
             if i % 2500 == 0 or i == num_files - 1:
                 print('Image {}/{}'.format(i, num_files))
@@ -119,8 +119,8 @@ class PreProcessor():
         #print('Training: {} Testing: {} Extra: {}'\
          #     .format(num_train_files, num_test_files, num_extra_files))
 
-        data = unpack_struct(os.path.join(data_root, 'train', 'digitStruct.mat'))
-        test_data = unpack_struct(os.path.join(data_root, 'test', 'digitStruct.mat'))
+        data = self.unpack_struct(os.path.join(self.data_path, 'train', 'digitStruct.mat'))
+        test_data = self.unpack_struct(os.path.join(self.data_path, 'test', 'digitStruct.mat'))
 
         metadata_file = 'SVHN_metadata.pickle'
         print('Creating {} file'.format(metadata_file))
