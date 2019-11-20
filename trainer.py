@@ -83,7 +83,7 @@ class Trainer:
         self.datasets['Train'] = SVHNDataset(train_data, os.path.join(self.data_path, 'train'), \
                                              self.data_transforms['Train'])
 
-        self.datasets['Validation'] = SVHNDataset(validation_data, os.path.join(self.data_path, 'train'), \
+        self.datasets['Validation'] = SVHNDataset(validation_data, os.path.join(self.data_path, 'test'), \
                                                   self.data_transforms['Validation'])
 
         self.datasets['Test'] = SVHNDataset(test_data, os.path.join(self.data_path, 'test'), \
