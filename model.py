@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-class SVHN_CNN(nn.Module):
+class SVHNModel(nn.Module):
     def __init__(self):
-        super(SVHN_CNN, self).__init__()
+        super(SVHNModel, self).__init__()
 
         self.block1 = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=(3, 3), stride=1, padding=1),

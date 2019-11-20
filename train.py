@@ -7,7 +7,7 @@ from torchvision import transforms
 from random import shuffle
 import time
 
-from model import SVHN_CNN
+from model import SVHNModel
 from torch_dataset import SVHN_Dataset
 from options import SVHN_Options
 from utils import *
@@ -31,7 +31,7 @@ class Trainer:
         self.lr = self.opt.learning_rate
 
         # Create model and place on GPU
-        self.model = SVHN_CNN()
+        self.model = SVHNModel()
         self.model = self.model.to(self.device)
 
         # Loss function and optimizer
@@ -39,8 +39,9 @@ class Trainer:
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
 
         print('Training options:\n'
-              '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t Learning rate: {}\n\t Loss: {}'.\
-              format(self.input_size, self.batch_size, self.epochs, self.lr, self.criterion))
+                '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t'
+                'Learning rate: {}\n\tLoss: {}\n\tOptimizer: {}\n'.\
+                format(self.input_size, self.batch_size, self.epochs, self.lr, self.criterion, self.optimizer))
         
         # load data from pickle file
         data, test_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
@@ -53,7 +54,7 @@ class Trainer:
         validation_data = data[split:]
         
         print('Training on:\n'
-              '\tTrain files: {}\n\tValidation files: {}\n\tTest files: {}'\
+              '\tTrain files: {}\n\tValidation files: {}\n\tTest files: {}\n'\
               .format(len(train_data), len(validation_data), len(test_data)))
                                                                       
         self.data_transforms = {
