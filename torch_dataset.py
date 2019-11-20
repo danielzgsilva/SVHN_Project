@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 import PIL.Image as pil
 import os
 
-class SVHN_Dataset(Dataset):
+class SVHNDataset(Dataset):
     """Abstract PyTorch dataset class for the Street View House Numbers dataset"""
 
     def __init__(self, metadata, data_path, transform=None):
