@@ -34,14 +34,14 @@ class Trainer:
 
         # Loss function and optimizer
         self.criterion = nn.CrossEntropyLoss()
-        #self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
-        self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=0.0005)
-        self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.5)
+        self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
+        #self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=0.0005)
+        #self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.5)
 
         print('Training options:\n'
               '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t'
-              'Learning rate: {}\n\tLoss: {}\n\tOptimizer: {}\n'. \
-              format(self.input_size, self.batch_size, self.epochs, self.lr, self.criterion, self.optimizer))
+              'Learning rate: {}\n\tStep Size: {}\n\tLoss: {}\n\tOptimizer: {}\n'. \
+              format(self.input_size, self.batch_size, self.epochs, self.lr, self.step, self.criterion, self.optimizer))
 
         # load data from pickle file
         train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
@@ -160,7 +160,7 @@ class Trainer:
                 if phase == 'Train':
                     loss.backward()
                     self.optimizer.step()
-                    self.scheduler.step()
+                    #self.scheduler.step()
 
             # Calculate sequence-wise and digit-wise accuracy for the batch
             seq_correct, digit_correct = self.calc_acc(digit1, digit2, digit3, digit4, digit5, gt_labels)
