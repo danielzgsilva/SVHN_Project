@@ -4,7 +4,7 @@ import PIL.Image as pil
 import os
 
 class SVHN_Dataset(Dataset):
-    'Abstract PyTorch dataset class for the Street View House Numbers dataset'
+    """Abstract PyTorch dataset class for the Street View House Numbers dataset"""
 
     def __init__(self, metadata, data_path, transform=None):
         
