@@ -36,7 +36,7 @@ class Trainer:
         self.criterion = nn.CrossEntropyLoss()
         #self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
         self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=0.0005)
-        self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.5)
+        self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.9)
 
         print('Training options:\n'
               '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t'
