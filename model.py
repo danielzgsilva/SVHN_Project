@@ -78,10 +78,11 @@ class SVHNModel(nn.Module):
 
         self.fc2 = nn.Sequential(
             nn.Linear(3072, 3072),
-            nn.ReLU()
+            nn.ReLU(),
+            nn.Dropout(0.5)
         )
 
-        self.number_length = nn.Sequential(nn.Linear(3072, 6))
+        self.number_length = nn.Sequential(nn.Linear(3072, 5))
         self.digit1 = nn.Sequential(nn.Linear(3072, 11))
         self.digit2 = nn.Sequential(nn.Linear(3072, 11))
         self.digit3 = nn.Sequential(nn.Linear(3072, 11))

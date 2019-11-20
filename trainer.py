@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch import optim
+from torch.optim.lr_scheduler import StepLR
 from torchvision import transforms
 
 from random import shuffle
@@ -25,6 +26,7 @@ class Trainer:
         self.num_workers = self.opt.num_workers
         self.epochs = self.opt.num_epochs
         self.lr = self.opt.learning_rate
+        self.step = self.opt.scheduler_step_size
 
         # Create model and place on GPU
         self.model = SVHNModel()
@@ -32,12 +34,14 @@ class Trainer:
 
         # Loss function and optimizer
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
+        #self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
+        self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=0.0005)
+        self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.5)
 
         print('Training options:\n'
               '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t'
               'Learning rate: {}\n\tLoss: {}\n\tOptimizer: {}\n'. \
-              format(self.input_size, self.batch_size, self.epochs, self.lr, self.criterion, 'Adam()'))
+              format(self.input_size, self.batch_size, self.epochs, self.lr, self.criterion, self.optimizer))
 
         # load data from pickle file
         train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
@@ -88,7 +92,7 @@ class Trainer:
         self.test_loader = DataLoader(dataset=self.datasets['Test'], batch_size=1, shuffle=True)
 
     def calc_loss(self, length, digit1, digit2, digit3, digit4, digit5, gt_length, gt_labels):
-        length_loss = self.criterion(length, gt_length)
+        length_loss = self.criterion(length, gt_length - 1)
         digit1_loss = self.criterion(digit1, gt_labels[:, 0])
         digit2_loss = self.criterion(digit2, gt_labels[:, 1])
         digit3_loss = self.criterion(digit3, gt_labels[:, 2])
@@ -150,17 +154,16 @@ class Trainer:
                 length, digit1, digit2, digit3, digit4, digit5 = self.model(images)
 
                 # Calculate the loss of the batch
-                loss = self.calc_loss(length, digit1, digit2, digit3, \
-                                      digit4, digit5, gt_lengths, gt_labels)
+                loss = self.calc_loss(length, digit1, digit2, digit3, digit4, digit5, gt_lengths, gt_labels)
 
                 # Adjust weights through backprop if we're in training phase
                 if phase == 'Train':
                     loss.backward()
                     self.optimizer.step()
+                    self.scheduler.step()
 
             # Calculate sequence-wise and digit-wise accuracy for the batch
-            seq_correct, digit_correct = self.calc_acc(digit1, digit2, digit3, \
-                                                       digit4, digit5, gt_labels)
+            seq_correct, digit_correct = self.calc_acc(digit1, digit2, digit3, digit4, digit5, gt_labels)
 
             # Document statistics for the batch
             running_loss += loss.item() * images.size(0)

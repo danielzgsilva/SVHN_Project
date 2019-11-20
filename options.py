@@ -7,7 +7,6 @@ class SVHN_Options:
     def __init__(self):
         self.parser = argparse.ArgumentParser(description="SVHN options")
 
-        # PATHS
         self.parser.add_argument("--data_path",
                                  type=str,
                                  help="path to the training data",
@@ -17,7 +16,6 @@ class SVHN_Options:
                                  help="directory to save model weights in",
                                  default=os.path.join(file_dir, "models"))
 
-        # TRAINING options
         self.parser.add_argument("--model_name",
                                  type=str,
                                  help="name of the model")
@@ -30,7 +28,6 @@ class SVHN_Options:
                                  help="input image width",
                                  default=128)
 
-        # OPTIMIZATION options
         self.parser.add_argument("--batch_size",
                                  type=int,
                                  help="batch size",
@@ -45,13 +42,12 @@ class SVHN_Options:
         self.parser.add_argument("--scheduler_step_size",
                                  type=int,
                                  help="step size of the scheduler",
-                                 default=15)
+                                 default=10)
         self.parser.add_argument("--num_workers",
                                  type=int,
                                  help="number of dataloader workers",
                                  default=12)
 
-        # LOADING options
         self.parser.add_argument("--model_to_load",
                                  nargs="+",
                                  type=str,
