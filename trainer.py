@@ -244,6 +244,7 @@ class DetectionTrainer:
         self.model_name = self.opt.model_name
 
         # Training parameters
+        self.input_size = (self.opt.height, self.opt.width)
         self.batch_size = int(self.opt.batch_size)
         self.num_workers = int(self.opt.num_workers)
         self.epochs = int(self.opt.num_epochs)
@@ -265,9 +266,10 @@ class DetectionTrainer:
         num_classes = 11
 
         self.model = FasterRCNN(feature_extractor,
-                                   num_classes=num_classes,
-                                   rpn_anchor_generator=anchor_generator,
-                                   box_roi_pool=roi_pooler)
+                                num_classes=num_classes,
+                                rpn_anchor_generator=anchor_generator,
+                                box_roi_pool=roi_pooler,
+                                min_size=256, max_size=512)
 
         self.model.to(self.device)
 

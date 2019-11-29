@@ -157,7 +157,6 @@ class DigitModel(nn.Module):
             nn.Dropout(0.2)
         )
 
-        self.global_pool = nn.AdaptiveAvgPool2d(1)
 
     # Feed the input through each of the layers we defined
     def forward(self, x):
@@ -166,8 +165,6 @@ class DigitModel(nn.Module):
         x = self.block3(x)
         x = self.block4(x)
         x = self.block5(x)
-
-        x = self.global_pool(x)
 
         return x
 
