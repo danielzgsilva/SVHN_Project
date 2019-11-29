@@ -5,12 +5,15 @@ from torch import optim
 from torch.optim.lr_scheduler import StepLR
 from torchvision import transforms
 
+from engine import train_one_epoch, evaluate
+from utils import *
+
 from random import shuffle
 import time
 
-from model import SVHNModel
-from torch_dataset import SVHNDataset
-from utils import *
+from models import SequenceModel, DetectionModel
+from torch_dataset import SVHNDataset, DetectionDataset
+from my_utils import *
 
 class Trainer:
     def __init__(self, args):
@@ -29,7 +32,7 @@ class Trainer:
         self.step = int(self.opt.scheduler_step_size)
 
         # Create model and place on GPU
-        self.model = SVHNModel()
+        self.model = SequenceModel()
         self.model = self.model.to(self.device)
 
         # Loss function and optimizer
@@ -225,5 +228,85 @@ class Trainer:
         self.model.load_state_dict(best_model_wts)
 
         save_model(self.model_path, self.model_name, self.model, self.epochs, self.optimizer, self.criterion)
+
+        return
+
+class DetectionTrainer:
+    def __init__(self, args):
+        self.opt = args
+        self.data_path = self.opt.data_path
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.model_path = self.opt.model_path
+        self.model_name = self.opt.model_name
+
+        # Training parameters
+        self.batch_size = int(self.opt.batch_size)
+        self.num_workers = int(self.opt.num_workers)
+        self.epochs = int(self.opt.num_epochs)
+        self.lr = float(self.opt.learning_rate)
+        self.step = int(self.opt.scheduler_step_size)
+
+        # Create model and place on GPU
+        self.model = DetectionModel().detector()
+        self.model = self.model.to(self.device)
+
+        # Loss function and optimizer
+        self.criterion = nn.CrossEntropyLoss()
+        params = [p for p in self.model.parameters() if p.requires_grad]
+        self.optimizer = optim.SGD(params, lr=self.lr, momentum=0.9, weight_decay=0.0005)
+        self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.9)
+
+        print('Training options:\n'
+              '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t'
+              'Learning rate: {}\n\tStep Size: {}\n\tLoss: {}\n\tOptimizer: {}\n'. \
+              format(self.input_size, self.batch_size, self.epochs, self.lr, self.step, self.criterion, self.optimizer))
+
+        # load data from pickle file
+        train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
+        shuffle(train_data)
+        shuffle(temp_data)
+
+        # Splitting the data to create a validation set
+        split = round(0.5 * len(temp_data))
+        validation_data = temp_data[split:]
+        test_data = temp_data[:split]
+
+        print('Training on:\n'
+              '\tTrain files: {}\n\tValidation files: {}\n\tTest files: {}\n' \
+              .format(len(train_data), len(validation_data), len(test_data)))
+
+        # Data transformations to be used during loading of images
+        self.data_transforms = {
+            'Train': transforms.Compose([transforms.ToTensor()]),
+            'Validation': transforms.Compose([transforms.ToTensor()]),
+            'Test': transforms.Compose([transforms.ToTensor()])}
+
+        # Creating PyTorch datasets
+        self.datasets = dict()
+        self.datasets['Train'] = DetectionDataset(train_data, os.path.join(self.data_path, 'train'), \
+                                        self.data_transforms['Train'])
+
+        self.datasets['Validation'] = DetectionDataset(validation_data, os.path.join(self.data_path, 'test'), \
+                                             self.data_transforms['Validation'])
+
+        self.datasets['Test'] = DetectionDataset(test_data, os.path.join(self.data_path, 'test'), \
+                                       self.data_transforms['Test'])
+
+
+        # Creating PyTorch dataloaders
+        self.dataloaders = {i: DataLoader(self.datasets[i], batch_size=self.batch_size, shuffle=True, \
+                                          num_workers=self.num_workers, collate_fn=collate_fn) for i in ['Train', 'Validation']}
+
+        self.test_loader = DataLoader(dataset=self.datasets['Test'], batch_size=1, shuffle=True)
+
+    def train(self):
+        for epoch in range(self.epochs):
+            train_one_epoch(self.model, self.optimizer, self.dataloaders['Train'], self.device, epoch, print_freq=1000)
+            # update the learning rate
+            self.scheduler.step()
+            # evaluate on the test dataset
+            evaluate(self.model, self.dataloaders['Validation'], device=self.device)
+
+            save_model(self.model_path, self.model_name + '_' + str(epoch), DetectionModel, self.model, self.epochs, self.optimizer, self.criterion)
 
         return

@@ -4,7 +4,7 @@ import sys
 import h5py
 
 from options import SVHN_Options
-from utils import *
+from my_utils import *
 
 options = SVHN_Options()
 opts = options.parse()
