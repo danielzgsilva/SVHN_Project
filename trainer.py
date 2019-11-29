@@ -258,7 +258,7 @@ class DetectionTrainer:
         # SGD optimizer
         params = [p for p in self.model.parameters() if p.requires_grad]
         self.optimizer = optim.SGD(params, lr=self.lr, momentum=0.9, weight_decay=0.0005)
-        self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.9)
+        self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.1)
 
         print('Detection training options:\n'
               '\tBatch size: {}\n\tEpochs: {}\n\t'
