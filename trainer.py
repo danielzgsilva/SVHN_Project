@@ -247,7 +247,8 @@ class DetectionTrainer:
         self.step = int(self.opt.scheduler_step_size)
 
         # Create model and place on GPU
-        self.model = DetectionModel().detector()
+        faster_rcnn = DetectionModel()
+        self.model = faster_rcnn.detector()
         self.model = self.model.to(self.device)
 
         # Loss function and optimizer
