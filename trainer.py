@@ -271,16 +271,15 @@ class DetectionTrainer:
 
         self.model.to(self.device)
 
-        # Loss function and optimizer
-        self.criterion = nn.CrossEntropyLoss()
+        # SGD optimizer
         params = [p for p in self.model.parameters() if p.requires_grad]
         self.optimizer = optim.SGD(params, lr=self.lr, momentum=0.9, weight_decay=0.0005)
         self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.9)
 
         print('Detection training options:\n'
               '\tBatch size: {}\n\tEpochs: {}\n\t'
-              'Learning rate: {}\n\tStep Size: {}\n\tLoss: {}\n\tOptimizer: {}\n'. \
-              format(self.batch_size, self.epochs, self.lr, self.step, self.criterion, self.optimizer))
+              'Learning rate: {}\n\tStep Size: {}\n\tOptimizer: {}\n'. \
+              format(self.batch_size, self.epochs, self.lr, self.step, self.optimizer))
 
         # load data from pickle file
         train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
