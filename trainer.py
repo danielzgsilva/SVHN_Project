@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch import optim
 from torch.optim.lr_scheduler import StepLR
+import torchvision
 from torchvision import transforms
 
 from torchvision.models.detection import FasterRCNN
@@ -250,8 +251,24 @@ class DetectionTrainer:
         self.step = int(self.opt.scheduler_step_size)
 
         # Create model and place on GPU
-        faster_rcnn = DetectionModel()
-        self.model = faster_rcnn.detector()
+        feature_extractor = DigitModel()
+        feature_extractor.out_channels = 512
+
+        anchor_generator = AnchorGenerator(sizes=((32, 64, 128, 256, 512),),
+                                                aspect_ratios=((0.5, 1.0, 2.0),))
+
+        roi_pooler = torchvision.ops.MultiScaleRoIAlign(featmap_names=[0],
+                                                             output_size=7,
+                                                             sampling_ratio=2)
+
+        # Digits 0-9 and a background class
+        num_classes = 11
+
+        self.model = FasterRCNN(feature_extractor,
+                                   num_classes=num_classes,
+                                   rpn_anchor_generator=anchor_generator,
+                                   box_roi_pool=roi_pooler)
+
         self.model.to(self.device)
 
         # Loss function and optimizer
