@@ -277,10 +277,10 @@ class DetectionTrainer:
         self.optimizer = optim.SGD(params, lr=self.lr, momentum=0.9, weight_decay=0.0005)
         self.scheduler = StepLR(self.optimizer, step_size=self.step, gamma=0.9)
 
-        print('Training options:\n'
-              '\tInput size: {}\n\tBatch size: {}\n\tEpochs: {}\n\t'
+        print('Detection training options:\n'
+              '\tBatch size: {}\n\tEpochs: {}\n\t'
               'Learning rate: {}\n\tStep Size: {}\n\tLoss: {}\n\tOptimizer: {}\n'. \
-              format(self.input_size, self.batch_size, self.epochs, self.lr, self.step, self.criterion, self.optimizer))
+              format(self.batch_size, self.epochs, self.lr, self.step, self.criterion, self.optimizer))
 
         # load data from pickle file
         train_data, temp_data = load_pickle(os.path.join(self.data_path, 'SVHN_metadata.pickle'))
