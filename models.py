@@ -174,7 +174,7 @@ class DigitModel(nn.Module):
 class DetectionModel(nn.Module):
     def __init__(self):
         super(DetectionModel, self).__init__()
-        self.feature_extractor = DigitModel
+        self.feature_extractor = DigitModel()
         self.feature_extractor.out_channels = 512
 
         self.anchor_generator = AnchorGenerator(sizes=((32, 64, 128, 256, 512),),

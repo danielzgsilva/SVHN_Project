@@ -5,13 +5,16 @@ from torch import optim
 from torch.optim.lr_scheduler import StepLR
 from torchvision import transforms
 
+from torchvision.models.detection import FasterRCNN
+from torchvision.models.detection.rpn import AnchorGenerator
+
 from engine import train_one_epoch, evaluate
 from utils import *
 
 from random import shuffle
 import time
 
-from models import SequenceModel, DetectionModel
+from models import SequenceModel, DetectionModel, DigitModel
 from torch_dataset import SVHNDataset, DetectionDataset
 from my_utils import *
 
@@ -33,7 +36,7 @@ class Trainer:
 
         # Create model and place on GPU
         self.model = SequenceModel()
-        self.model = self.model.to(self.device)
+        self.model.to(self.device)
 
         # Loss function and optimizer
         self.criterion = nn.CrossEntropyLoss()
@@ -249,7 +252,7 @@ class DetectionTrainer:
         # Create model and place on GPU
         faster_rcnn = DetectionModel()
         self.model = faster_rcnn.detector()
-        self.model = self.model.to(self.device)
+        self.model.to(self.device)
 
         # Loss function and optimizer
         self.criterion = nn.CrossEntropyLoss()
