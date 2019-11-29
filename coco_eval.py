@@ -1,3 +1,5 @@
+# Retreived from https://github.com/pytorch/vision/tree/master/references/detection
+
 import json
 import tempfile
 

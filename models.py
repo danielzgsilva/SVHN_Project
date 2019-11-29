@@ -169,26 +169,38 @@ class DigitModel(nn.Module):
         return x
 
 class DetectionModel(nn.Module):
+    ''' Creates a Faster RCNN model using the feature extraction model above, DigitModel, as a backbone.
+    FasterRCNN implementation from here: https://github.com/pytorch/vision/tree/master/torchvision/models/detection'''
     def __init__(self):
         super(DetectionModel, self).__init__()
+        # Creating the feature extractor
         self.feature_extractor = DigitModel()
         self.feature_extractor.out_channels = 512
 
-        self.anchor_generator = AnchorGenerator(sizes=((32, 64, 128, 256, 512),),
+        # The region proposal network will generate 5x3 anchors per spatial location
+        # Each with 5 different sizes and 3 different aspect ratios
+        self.anchor_generator = AnchorGenerator(sizes=((16, 32, 64, 128, 256),),
                                            aspect_ratios=((0.5, 1.0, 2.0),))
 
+        # Extract and align features from each proposed region on each scale.
+        # These features would then be sent to the final fully connected layers for classification and bbox regression
         self.roi_pooler = torchvision.ops.MultiScaleRoIAlign(featmap_names=[0],
                                                         output_size=7,
                                                         sampling_ratio=2)
 
+        # We define 11 classes, 1 for each digit 0-9 and an additional class for the background
         self.num_classes = 11
 
+        # Compile these modules within a PyTorch implementation of Faster RCNN
         self.detector = FasterRCNN(self.feature_extractor,
                                     num_classes=self.num_classes,
                                     rpn_anchor_generator=self.anchor_generator,
-                                    box_roi_pool=self.roi_pooler)
+                                    box_roi_pool=self.roi_pooler,
+                                    min_size=384, max_size=512)
 
-    def detector(self):
-        return self.detector
+
+def get_faster_rcnn():
+    model = DetectionModel()
+    return model.detector
 
 

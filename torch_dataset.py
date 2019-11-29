@@ -35,7 +35,15 @@ class SVHNDataset(Dataset):
 
 
 class DetectionDataset(Dataset):
-    'Abstract PyTorch dataset class for the Street View House Numbers dataset'
+    '''
+    Abstract PyTorch dataset class for the Street View House Numbers dataset
+    Returns a dictionary containing the following:
+        boxes (FloatTensor[N, 4]): the coordinates of the N bounding boxes in [x0, y0, x1, y1] format
+        labels (Int64Tensor[N]): the label for each bounding box
+        image_id (Int64Tensor[1]): an image identifier, unique between all the images in the dataset
+        area (Tensor[N]): The area of the bounding box.
+        iscrowd (UInt8Tensor[N]): instances with iscrowd=True will be ignored during evaluation.
+        '''
 
     def __init__(self, metadata, data_path, transform=None):
 

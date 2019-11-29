@@ -1,3 +1,5 @@
+# Retreived from https://github.com/pytorch/vision/tree/master/references/detection
+
 from __future__ import print_function
 
 from collections import defaultdict, deque

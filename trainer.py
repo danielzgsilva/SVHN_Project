@@ -15,7 +15,7 @@ from utils import *
 from random import shuffle
 import time
 
-from models import SequenceModel, DetectionModel, DigitModel
+from models import SequenceModel, get_faster_rcnn
 from torch_dataset import SVHNDataset, DetectionDataset
 from my_utils import *
 
@@ -252,25 +252,7 @@ class DetectionTrainer:
         self.step = int(self.opt.scheduler_step_size)
 
         # Create model and place on GPU
-        feature_extractor = DigitModel()
-        feature_extractor.out_channels = 512
-
-        anchor_generator = AnchorGenerator(sizes=((32, 64, 128, 256, 512),),
-                                                aspect_ratios=((0.5, 1.0, 2.0),))
-
-        roi_pooler = torchvision.ops.MultiScaleRoIAlign(featmap_names=[0],
-                                                             output_size=7,
-                                                             sampling_ratio=2)
-
-        # Digits 0-9 and a background class
-        num_classes = 11
-
-        self.model = FasterRCNN(feature_extractor,
-                                num_classes=num_classes,
-                                rpn_anchor_generator=anchor_generator,
-                                box_roi_pool=roi_pooler,
-                                min_size=256, max_size=512)
-
+        self.model = get_faster_rcnn()
         self.model.to(self.device)
 
         # SGD optimizer
@@ -329,6 +311,9 @@ class DetectionTrainer:
             # evaluate on the test dataset
             evaluate(self.model, self.dataloaders['Validation'], device=self.device)
 
-            save_model(self.model_path, self.model_name + '_' + str(epoch), DetectionModel, self.model, self.epochs, self.optimizer, self.criterion)
+            # Save model at current state
+            name = self.model_name + '_Epoch' + str(epoch)
+            save_model(self.model_path, name, 'rcnn', self.model, self.epochs, self.optimizer, None)
+            print('Successfully saved {} after epoch {}'.format(self.model_name, epoch))
 
         return

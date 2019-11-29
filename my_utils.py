@@ -2,7 +2,7 @@ import torch
 import pickle
 import os
 
-from models import SequenceModel, DigitModel
+from models import SequenceModel, get_faster_rcnn
 
 def load_pickle(filename):
     with open(filename, 'rb') as file:
@@ -28,7 +28,10 @@ def save_model(path, name, arch, model, epochs, optimizer, criterion):
 def load_model(filepath):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(filepath, map_location=device)
-    model = checkpoint['model']
+    if checkpoint['model'] == 'rcnn':
+        model = get_faster_rcnn()
+    else:
+        model = checkpoint['model']
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer = checkpoint['optimizer']
     optimizer = optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
