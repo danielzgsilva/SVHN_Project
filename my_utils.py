@@ -39,4 +39,4 @@ def load_model(filepath):
     epoch = checkpoint['epoch']
     model.to(device)
 
-    return model, optimizer, criterion, epoch
+    return model, optimizer, criterion, epoch, device

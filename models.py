@@ -196,7 +196,8 @@ class DetectionModel(nn.Module):
                                     num_classes=self.num_classes,
                                     rpn_anchor_generator=self.anchor_generator,
                                     box_roi_pool=self.roi_pooler,
-                                    min_size=384, max_size=512)
+                                    min_size=384, max_size=512,
+                                    box_score_thresh=0.5, box_nms_thresh=0.5, box_detections_per_img=5)
 
 
 def get_faster_rcnn():
