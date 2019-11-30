@@ -19,6 +19,8 @@ from models import SequenceModel, get_faster_rcnn
 from torch_dataset import SVHNDataset, DetectionDataset
 from my_utils import *
 
+torch.multiprocessing.set_sharing_strategy('file_system')
+
 class ClassificationTrainer:
     def __init__(self, args):
         self.opt = args
