@@ -305,7 +305,7 @@ class DetectionTrainer:
 
     def train(self):
         for epoch in range(self.epochs):
-            train_one_epoch(self.model, self.optimizer, self.dataloaders['Train'], self.device, epoch, print_freq=1000)
+            train_one_epoch(self.model, self.optimizer, self.dataloaders['Train'], self.device, epoch, print_freq=500)
             # update the learning rate
             self.scheduler.step()
             # evaluate on the test dataset
