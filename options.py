@@ -15,6 +15,11 @@ class SVHN_Options:
                                  type=str,
                                  help="directory to save model weights in",
                                  default=os.path.join(file_dir, "models"))
+        self.parser.add_argument("--model_type",
+                                 type=str,
+                                 help="enter either detector for faster-rcnn approach or classifier for one shot classification of digit sequence",
+                                 choices=['detector', 'classifier']
+                                 )
 
         self.parser.add_argument("--model_name",
                                  type=str,
