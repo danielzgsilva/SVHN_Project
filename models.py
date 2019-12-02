@@ -3,7 +3,6 @@ import torch.nn as nn
 import torchvision
 from torchvision.models.detection import FasterRCNN
 from torchvision.models.detection.rpn import AnchorGenerator
-from torchvision.models import resnet34
 
 class SequenceModel(nn.Module):
     def __init__(self):
@@ -123,39 +122,39 @@ class DigitModel(nn.Module):
             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=(3, 3), stride=1, padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            nn.Dropout(0.2)
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+            #nn.Dropout(0.2)
         )
 
         self.block2 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            nn.Dropout(0.2)
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+            #nn.Dropout(0.2)
         )
 
         self.block3 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=128, kernel_size=(3, 3), stride=1, padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            nn.Dropout(0.2)
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+            #nn.Dropout(0.2)
         )
 
         self.block4 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=256, kernel_size=(3, 3), stride=1, padding=1),
             nn.BatchNorm2d(256),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            nn.Dropout(0.2)
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+            #nn.Dropout(0.2)
         )
         self.block5 = nn.Sequential(
             nn.Conv2d(in_channels=256, out_channels=512, kernel_size=(3, 3), stride=1, padding=1),
             nn.BatchNorm2d(512),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            nn.Dropout(0.2)
+            nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+            #nn.Dropout(0.2)
         )
 
 
@@ -175,11 +174,8 @@ class DetectionModel(nn.Module):
     def __init__(self):
         super(DetectionModel, self).__init__()
         # Creating the feature extractor
-        #self.feature_extractor = DigitModel()
-        #self.feature_extractor.out_channels = 512
-
-        self.feature_extractor = resnet34(pretrained=True)
-        self.feature_extractor.out_channels = 1000
+        self.feature_extractor = DigitModel()
+        self.feature_extractor.out_channels = 512
 
         # The region proposal network will generate 5x3 anchors per spatial location
         # Each with 5 different sizes and 3 different aspect ratios
