@@ -311,7 +311,7 @@ class DetectionTrainer:
             # update the learning rate
             self.scheduler.step()
             # evaluate on the test dataset
-            evaluate(self.model, self.dataloaders['Validation'], device=self.device)
+            evaluate(self.model, self.dataloaders['Validation'], device=self.device, 200)
 
             # Save model at current state
             name = self.model_name + '_Epoch' + str(epoch)
